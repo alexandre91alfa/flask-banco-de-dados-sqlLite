@@ -1,4 +1,5 @@
-from models import Pessoas, Atividades
+from models import Pessoas, Atividades, Usuarios
+
 
 # Pessoas
 
@@ -79,5 +80,18 @@ def exclui_atividade(id):
     Atividades.delele(atividade)
 
 
+# auth
+
+def insere_user(login, senha):
+    usuario = Usuarios(login=login, senha=senha)
+    Usuarios.save(usuario)
+    return {'status': 'success'}
+
+
+def usuarios_get():
+    usarios = Usuarios.query.all()
+    print(usarios)
+
+
 if __name__ == "__main__":
-    print(pessoa_referencia(1))
+    pass

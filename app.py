@@ -1,15 +1,39 @@
 import sqlalchemy
 from flask import Flask, request
 from flask_restful import Resource, Api
-from models import Pessoas, Atividades
+from models import Pessoas, Atividades, Usuarios
 from json import loads
 import utils
+from flask_httpauth import HTTPBasicAuth
 
+auth = HTTPBasicAuth()
 app = Flask(__name__)
 api = Api(app)
 
+# USUARIOS = {
+#     'root': 'admin',
+#     'admin': 'root'
+# }
+#
+#
+# @auth.verify_password
+# def verificacao(login, senha):
+#     if not (login, senha):
+#         return False
+#
+#     return USUARIOS.get(login) == senha
+
+
+@auth.verify_password
+def verificacao(login, senha):
+    if not (login, senha):
+        return False
+
+    return Usuarios.query.filter_by(login=login, senha=senha).first()
+
 
 class Pessoa(Resource):
+    @auth.login_required
     def get(self, id):
         try:
             pessoa = utils.consulta_id(id)
@@ -21,6 +45,7 @@ class Pessoa(Resource):
 
         return pessoa
 
+    @auth.login_required
     def put(self, id):
         pessoa = Pessoas.query.filter_by(id=id).first()
         dados = loads(request.data)
@@ -31,6 +56,7 @@ class Pessoa(Resource):
         Pessoas.save(pessoa)
         return dados
 
+    @auth.login_required
     def delete(self, id):
         try:
             utils.exclui_pessoa(id)
@@ -42,6 +68,7 @@ class Pessoa(Resource):
 
 
 class ListPessoa(Resource):
+    @auth.login_required
     def get(self):
         try:
             dados = utils.consulta()
@@ -49,6 +76,7 @@ class ListPessoa(Resource):
             dados = {'status': 'Erro pesquisa'}
         return dados
 
+    @auth.login_required
     def post(self):
         try:
             dados = loads(request.data)
@@ -64,6 +92,7 @@ class ListPessoa(Resource):
 
 class AtividadeList(Resource):
 
+    @auth.login_required
     def get(self):
         try:
             dados = utils.consultaAtividade()
@@ -74,6 +103,7 @@ class AtividadeList(Resource):
 
 class Atividade(Resource):
 
+    @auth.login_required
     def get(self, id):
         try:
             atividade = utils.consultaA_id(id)
@@ -85,6 +115,7 @@ class Atividade(Resource):
 
         return atividade
 
+    @auth.login_required
     def put(self, id):
         atividade = Atividades.query.filter_by(id=id).first()
         dados = loads(request.data)
@@ -93,6 +124,7 @@ class Atividade(Resource):
         Atividades.save(atividade)
         return dados
 
+    @auth.login_required
     def post(self, id):
         try:
             people = Pessoas.query.filter_by(id=id).first()
@@ -111,6 +143,7 @@ class Atividade(Resource):
 
         return result
 
+    @auth.login_required
     def delete(self, id):
         try:
             utils.exclui_atividade(id)
@@ -124,8 +157,8 @@ class Atividade(Resource):
 api.add_resource(AtividadeList, '/atv')
 api.add_resource(Atividade, '/atv/<int:id>')
 api.add_resource(Pessoa, '/people/<int:id>')
-api.add_resource(ListPessoa, '/')
+api.add_resource(ListPessoa, '/people')
 
 if __name__ == "__main__":
     # app.run(debug=True, host='192.168.100.103')
-    app.run(debug=True,)
+    app.run(debug=True, )
