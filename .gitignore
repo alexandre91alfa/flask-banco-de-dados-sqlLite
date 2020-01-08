@@ -1,0 +1,7 @@
+# gitignore flask
+
+atividades.db
+.idea/
+.vscode/
+__pycache__/models.cpython-37.pyc
+__pycache__/utils.cpython-37.pyc
