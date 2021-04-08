@@ -2,7 +2,7 @@ aniso8601==8.0.0
 asgiref==3.2.3
 astroid==2.3.3
 Click==7.0
-Django==3.0
+Django==3.0.14
 Flask==1.1.1
 Flask-RESTful==0.3.7
 isort==4.3.21
